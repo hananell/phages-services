@@ -1,0 +1,11 @@
+model:
+  path: "megaDNA_phage_277M.pt"
+  device: null  # auto-detect: cuda if available, else cpu
+  max_sequence_length: 96000
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+
+embedding:
+  layer_index: 0  # 0=coarsest, 1=intermediate, 2=finest

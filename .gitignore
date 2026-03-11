@@ -1,0 +1,33 @@
+# Virtual environments
+.venv/
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info/
+
+# Pre-trained model weights (download separately, see each service's README)
+*.pt
+
+# Test / tooling caches
+.pytest_cache/
+
+# Logs
+*.log
+
+# Scratch / output files (megadna-service exploration artefacts)
+sequence*.fasta
+"sequence (1).fasta"
+sequence*.gff3
+"sequence (1).gff3"
+output/
+embeddings_umap*.png
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Environment files (keep .env.example, ignore real .env)
+.env

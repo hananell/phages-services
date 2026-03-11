@@ -1,0 +1,15 @@
+model:
+  name: evo2_7b
+  device: null            # auto-detects: cuda if available, else cpu
+  max_sequence_length: 1000000
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+
+embedding:
+  layer_names:
+    - "blocks.28.mlp.l3"   # Functional/biological features
+    - "blocks.31"           # High-level sequence representation
+  tile_size: 1000000         # each tile is embedded in a separate GPU forward pass
+  batch_size: 32             # how many tiles to pack into a single GPU forward pass

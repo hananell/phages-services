@@ -1,0 +1,6 @@
+[project]
+name = "megadna"
+version = "1.0"
+description = "megaDNA model stub for checkpoint loading"
+requires-python = ">=3.10"
+dependencies = ["torch", "einops", "megabyte-pytorch"]

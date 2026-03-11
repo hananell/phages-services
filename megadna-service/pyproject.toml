@@ -1,0 +1,20 @@
+[project]
+name = "megadna-service"
+version = "1.0.0"
+description = "Self-hosted DNA embedding service for phage sequences using megaDNA model"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "bcbio-gff>=0.7.1",
+    "bio>=1.8.1",
+    "fastapi>=0.115.0",
+    "loguru>=0.7.0",
+    "matplotlib>=3.10.7",
+    "megadna",
+    "pyyaml>=6.0",
+    "umap-learn>=0.5.9.post2",
+    "uvicorn>=0.32.0",
+]
+
+[tool.uv.sources]
+megadna = { path = "../external/megaDNA" }
