@@ -96,6 +96,10 @@ class PredictionResponse(BaseModel):
         ge=0.0,
         le=1.0,
     )
+    hmm_hits: dict[str, int] = Field(
+        ...,
+        description="Binary presence/absence (0 or 1) for each of the 206 HMM protein domain profiles",
+    )
 
 
 class HealthResponse(BaseModel):
@@ -151,11 +155,19 @@ async def predict_sequence(request: SequenceRequest) -> PredictionResponse:
                 "Temperate" if temperate_prob > virulent_prob else "Virulent"
             )
 
+            # Read HMM domain presence/absence features
+            hmmsearch_tsv = fasta_path.with_suffix(".fasta.hmmsearch.tsv")
+            if not hmmsearch_tsv.exists():
+                raise RuntimeError("BACPHLIP HMM TSV file not found")
+            hmm_df = pd.read_csv(hmmsearch_tsv, sep="\t", index_col=0)
+            hmm_hits = {col: int(hmm_df[col].iloc[0]) for col in hmm_df.columns}
+
             return PredictionResponse(
                 genome_id=sequence_id,
                 predicted_lifestyle=predicted,
                 virulent_probability=round(virulent_prob, 6),
                 temperate_probability=round(temperate_prob, 6),
+                hmm_hits=hmm_hits,
             )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

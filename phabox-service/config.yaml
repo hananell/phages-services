@@ -1,0 +1,9 @@
+phabox:
+  dbdir: ./phabox_db_v2       # path to extracted PhaBOX database
+  min_len: 3000               # minimum contig length (PhaBOX default)
+  threads: 24                 # CPU threads for DIAMOND/BLAST/prodigal
+  timeout: 7200               # max seconds per batch subprocess
+
+server:
+  host: 0.0.0.0
+  port: 8005

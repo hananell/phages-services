@@ -1,0 +1,31 @@
+model:
+  # Path to the fine-tuned DeepPL weights directory (HuggingFace format).
+  # Must contain: config.json, pytorch_model.bin (or model.safetensors), vocab.txt.
+  # Mount at /model when running via Docker:
+  #   docker run -v /path/to/deeppl-weights:/model ...
+  path: /home/user/python_projects/phages_services/deeppl-service/model/deeppl_ckpt-340000
+
+  kmer: 6              # k-mer size (DNABERT uses 6-mers)
+  window_bp: 105       # sliding window size in bp = max_seq_length + kmer - 1
+  max_seq_length: 100  # max k-mer tokens per window (--max_seq_length in DeepPL)
+  stride: 10           # sliding window stride in bp.
+                       # DeepPL paper uses 1 (fully overlapping); we use 10 for throughput.
+                       # Adjacent windows share 95/105 bp of sequence, so the fraction of
+                       # high-confidence Lysogenic windows is statistically similar between
+                       # stride=1 and stride=10.  Voting thresholds are unchanged.
+
+  # GPU batching: how many windows to forward in a single model call.
+  # Reduce if you run out of GPU memory; the service also auto-halves on CUDA OOM.
+  max_batch_size: 4096
+
+  # Two-threshold voting — replicates DeepPL's predict_lyso_vs_lytic.py exactly:
+  #   run_finetune.py saves softmax(logits)[:,1] = P(LABEL_1=Lysogenic) per window.
+  #   A window is "high-confidence Lysogenic" if P(LABEL_1) > confidence_threshold.
+  #   Genome is called Temperate (Lysogenic) if fraction of such windows
+  #   >= lysogenic_window_fraction; otherwise Virulent (Lytic).
+  confidence_threshold: 0.9
+  lysogenic_window_fraction: 0.016
+
+server:
+  host: 0.0.0.0
+  port: 8004

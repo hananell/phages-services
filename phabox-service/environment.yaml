@@ -1,0 +1,15 @@
+# Conda environment providing the phabox2 CLI and its binary dependencies
+# (DIAMOND, BLAST, MCL, prodigal-gv). The FastAPI service itself is managed
+# by uv — this env only needs to be active so phabox2 is on PATH.
+#
+# Setup:
+#   conda env create -f environment.yaml
+#   conda activate phabox-tools
+#   uv run uvicorn service:app --host 0.0.0.0 --port 8005
+
+name: phabox-tools
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - phabox=2.1.13

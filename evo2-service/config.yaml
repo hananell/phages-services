@@ -11,5 +11,9 @@ embedding:
   layer_names:
     - "blocks.28.mlp.l3"   # Functional/biological features
     - "blocks.31"           # High-level sequence representation
-  tile_size: 1000000         # each tile is embedded in a separate GPU forward pass
-  batch_size: 32             # how many tiles to pack into a single GPU forward pass
+  # Chunk size used ONLY as OOM fallback. The service always tries a full-sequence
+  # forward pass first (whole phage at once = best quality). If CUDA OOM occurs,
+  # it retries with non-overlapping chunks of this size.
+  # 65536 tokens (~65 KB) requires ~8 GB of FFT working memory, well within
+  # the ~16 GB available after the 7B model is loaded on an RTX 5090.
+  fallback_chunk_size: 65536
