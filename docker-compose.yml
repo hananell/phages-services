@@ -1,0 +1,117 @@
+# Phage Services — Docker Compose
+#
+# Start all services:   docker compose up
+# Start specific:       docker compose up megadna hmm
+# GPU services:         docker compose --profile gpu up
+#
+# NOTE: bacphlip-service requires Python <3.10 and is built with its own
+# Dockerfile.  phabox-service requires a conda environment and is also
+# containerised separately.
+
+services:
+  # ── GPU services ──────────────────────────────────────────────────
+
+  megadna:
+    build:
+      context: ./megadna-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./megadna-service:/app
+      - ./external/megaDNA:/external/megaDNA
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    profiles: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  deeppl:
+    build:
+      context: ./deeppl-service
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8004"
+    volumes:
+      - ./deeppl-service:/app
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    profiles: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  # ── CPU services ──────────────────────────────────────────────────
+
+  hmm:
+    build:
+      context: ./hmm-service
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./hmm-service:/app
+      - hmm-db:/root/.phrogs
+    environment:
+      - HMM_HOST=0.0.0.0
+      - HMM_PORT=8002
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  bacphlip:
+    build:
+      context: ./bacphlip-service
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./bacphlip-service:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  phabox:
+    build:
+      context: ./phabox-service
+      dockerfile: Dockerfile
+    ports:
+      - "8005:8005"
+    volumes:
+      - ./phabox-service:/app
+      - phabox-db:/app/phabox_db_v2
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  hmm-db:
+  phabox-db:
