@@ -249,7 +249,6 @@ async def _run_phabox(
             tmppath = Path(tmpdir)
             fasta_path = tmppath / "input.fa"
             outpth = tmppath / "output"
-            midfolder = tmppath / "mid"
 
             _write_fasta(fasta_path, ids, sequences)
 
@@ -260,7 +259,7 @@ async def _run_phabox(
                 "--contigs", str(fasta_path),
                 "--outpth", str(outpth),
                 "--dbdir", dbdir,
-                "--midfolder", str(midfolder),
+                "--midfolder", "mid",
                 "--threads", str(threads),
                 "--len", str(min_len),
             ]
@@ -283,11 +282,11 @@ async def _run_phabox(
                 logger.error(
                     "phabox2 failed (rc={}): stderr={}",
                     result.returncode,
-                    result.stderr[:1000],
+                    result.stderr[-3000:],
                 )
                 raise RuntimeError(
                     f"phabox2 exited with code {result.returncode}: "
-                    f"{result.stderr[:500]}"
+                    f"{result.stderr[-2000:]}"
                 )
 
             return _parse_outputs(outpth, ids)
