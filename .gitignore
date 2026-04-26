@@ -32,5 +32,6 @@ embeddings_umap*.png
 # Environment files (keep .env.example, ignore real .env)
 .env
 
-# Service databases (download separately, see each service's README)
+# Service databases and model weights (download separately, see each service's README)
 phabox-service/phabox_db_v2/
+deeppl-service/model/
